@@ -1,19 +1,12 @@
 var express = require('express');
 var app = express();
+var mssql = require("./server.js");
 
-var bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.get('/', function (req, res) {
-    res.sendFile("D:\\Projects\\NodeTestProject\\index.html");
-});
-
-app.post('/submit-student-data', function (req, res) {
-    var name = req.body.firstName + ' ' + req.body.lastName;
-
-    res.send(name + ' Submitted Successfully!');
+app.get('/', async function (req, res) {
+    var result = await mssql.executeQuery("select * from cx.Campaigns;")
+    res.send(result);
 });
 
 var server = app.listen(5000, function () {
-    console.log('Node server is running..');
+    console.log('Server is running..');
 });

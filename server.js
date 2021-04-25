@@ -1,35 +1,27 @@
-var http = require('http'); // Import Node.js core module
+var sql = require("mssql/msnodesqlv8");
 
-var server = http.createServer(function (req, res) {   //create web server
-    if (req.url == '/') { //check the URL of the current request
-        
-        // set response header
-        res.writeHead(200, { 'Content-Type': 'text/html' }); 
-        
-        // set response content    
-        res.write('<html><body><p>This is home Page.</p></body></html>');
-        res.end();
-    
+// config for your database
+var config = {
+    server: ".\\SQLEXPRESS2017",
+    database: 'mi_datamart',
+    parseJSON: true,
+    connectionTimeout: 15000,
+    options: {
+        trustedConnection: true
     }
-    else if (req.url == "/student") {
-        
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.write('<html><body><p>This is student Page.</p></body></html>');
-        res.end();
-    
+};
+
+var executeQuery = async function (query) {
+    try {
+        // make sure that any items are correctly URL encoded in the connection string
+        await sql.connect(config);
+        const result = await sql.query(query);
+        return result.recordset;
+    } catch (err) {
+        console.log(err);
     }
-    else if (req.url == "/admin") {
-        
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.write('<html><body><p>This is admin Page.</p></body></html>');
-        res.end();
-    
-    }
-    else
-        res.end('Invalid Request!');
+}
 
-});
-
-server.listen(5000); //6 - listen for any incoming requests
-
-console.log('Node.js web server at port 5000 is running..')
+module.exports = {
+    executeQuery
+}
